@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for getgather-weather on 2025-08-28T13:52:15-06:00
+# fly.toml app configuration file generated for mcp-openweathermap on 2025-09-02T16:18:18-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'getgather-weather-api'
+app = 'mcp-openweathermap'
 primary_region = 'sjc'
 
 [build]
