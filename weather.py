@@ -19,8 +19,14 @@ OPEN_WEATHER_API_BASE = "https://api.openweathermap.org/data/2.5/weather?lat={la
 USER_AGENT = "weather-app/1.0"
 
 
-async def make_nws_request(url: str) -> dict[str, Any] | None:
-    """Make a request to the NWS API with proper error handling."""
+async def make_nws_request(url: str) -> list[dict[str, Any]] | dict[str, Any] | None:
+    """Make a request to the NWS API with proper error handling.
+
+    Returns:
+        - list[dict[str, Any]] for geocoding responses
+        - dict[str, Any] for weather data responses
+        - None if the request fails
+    """
     headers = {"User-Agent": USER_AGENT, "Accept": "application/geo+json"}
     async with httpx.AsyncClient() as client:
         try:
@@ -36,7 +42,9 @@ async def get_lat_lon(city: str, state: str, country: str) -> tuple[float, float
     url = f"http://api.openweathermap.org/geo/1.0/direct?q={city},{state},{country}&appid={open_weather_api_key}"
     data = await make_nws_request(url)
     print(f"Data: {data}")
-    return data[0]["lat"], data[0]["lon"]
+    if not data:
+        raise ValueError("Could not get location data")
+    return float(data[0]["lat"]), float(data[0]["lon"])
 
 
 @mcp.tool()
