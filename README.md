@@ -1,39 +1,23 @@
 # api-weather-mcp
-Basic HTTP MCP server for a weather app using a weather API
 
+Basic HTTP MCP server for a weather app using the OpenWeatherMap API. Containerized for convenience.
 
-A containerized version of the weather mcp at https://modelcontextprotocol.io/quickstart/server
 
 ## Quickstart
 
 ### Connecting Your MCP Client to a Deployed Instance
 
-For convenience, we have deployed the container using fly.io at https://getgather-weather.fly.dev/mcp. If you so desire, you can connect your MCP client directly to this instance. For example, in Cursor/VS Code you can add the following to your `mcp.json`:
+For convenience, we have deployed the container using fly.io at https://mcp-openweathermap.fly.dev/mcp. 
+
+If you so desire, you can connect your MCP client directly to this instance. Clients like Claude offer an option to add custom connectors directly from the settings. Open Claude, navigate to settings, and go to the "Connectors" tab. Click on "Add custom connector" and give your connector a name. Then, in the second box for "Remore MCP server URL" you can paste `https://mcp-openweathermap.fly.dev/mcp`. Finish by clicking "Add" (no advanced settings necessary for this!). You should see the new weather MCP appear in your list of connectors. Open a new chat in Claude and look for the server under the "Tools" icon. You should see it appear under the name you set for it.
+
+For clients that don't use custom connectors in the UI, you can always set up the weather MCP using a simple URL in the configuration JSON. For example, in Cursor/VS Code you can add the following to your `mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "weather": {
-      "url": "https://getgather-weather.fly.dev/mcp"
-    }
-  }
-}
-```
-
-Clients such as VS Code and Cursor offer true streamable http support (as well as MCP inspector), so there's no need for `npx` or `mcp-remote` commands. 
-
-If you want to test with Claude, it isn't truly using streamable http as the transport, as Claude Desktop doesn't support that yet, but it works fine for testing (claude launches a proxy that hits your endpoint). For example, in Claude Desktop, you can add the following to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "http-weather": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "https://getgather-weather.fly.dev/mcp",
-        "--allow-http"
-      ]
+      "url": "https://mcp-openweathermap.fly.dev/mcp"
     }
   }
 }
@@ -43,7 +27,9 @@ If you want to test with Claude, it isn't truly using streamable http as the tra
 
 Alternatively, you can build the Docker image locally and add the running endpoint to your client config. The following command pulls and runs the latest public image for the weather MCP.
 
-`$ docker run -p 8000:8000 ghcr.io/mcp-getgather/containerized-weather-mcp`
+`$ docker run -p 8000:8000 -e OPEN_WEATHER_API_KEY={api_key} ghcr.io/mcp-getgather/api-weather-mcp`
+
+When running the docker command locally be sure to include an `OPEN_WEATHER_API_KEY` as an environment variable argument, otherwise the service will fail. You can get a free API key [here](https://openweathermap.org/api). The deployed instance on Fly already has an API key, which is why it works out of the box.
 
 Then add http://localhost:8000/mcp as a model endpoint in your MCP client. If using Claude Desktop, you can add the following to your `claude_desktop_config.json` (which is found from `Claude` -> `Settings` -> `Developer` -> `Edit Config`):
 
@@ -57,6 +43,18 @@ Then add http://localhost:8000/mcp as a model endpoint in your MCP client. If us
         "http://127.0.0.1:8000/mcp",
         "--allow-http"
       ]
+    }
+  }
+}
+```
+
+For VS Code or Cursor:
+
+```json
+{
+  "mcpServers": {
+    "weather": {
+      "url": "http://localhost:8000/mcp"
     }
   }
 }
