@@ -41,7 +41,6 @@ async def get_lat_lon(city: str, state: str, country: str) -> tuple[float, float
     """Get the latitude and longitude for a city, state, and country."""
     url = f"http://api.openweathermap.org/geo/1.0/direct?q={city},{state},{country}&appid={open_weather_api_key}"
     data = await make_nws_request(url)
-    print(f"Data: {data}")
     if not data:
         raise ValueError("Could not get location data")
     return float(data[0]["lat"]), float(data[0]["lon"])
@@ -76,7 +75,7 @@ async def get_current_weather(city: str, state: str, country: str) -> str:
 @mcp.custom_route("/", methods=["GET"])
 async def redirect_to_github(request: Request) -> Response:
     return RedirectResponse(
-        url="https://github.com/mcp-getgather/containerized-weather-mcp",
+        url="https://github.com/mcp-getgather/api-weather-mcp",
         status_code=301,
     )
 
