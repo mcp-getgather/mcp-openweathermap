@@ -1,12 +1,12 @@
 [project]
-name = "containerized-weather-mcp"
+name = "api-weather-mcp"
 version = "0.1.0"
-description = "A containerized weather mcp server"
+description = "A containerized weather MCP server built with OpenWeatherMap API"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.13.1",
-    "ruff>=0.12.10",
+    "ruff>=0.12.11",
     "ty>=0.0.1a19",
 ]
