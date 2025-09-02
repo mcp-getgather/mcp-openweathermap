@@ -29,7 +29,7 @@ Alternatively, you can build the Docker image locally and add the running endpoi
 
 `$ docker run -p 8000:8000 -e OPEN_WEATHER_API_KEY={api_key} ghcr.io/mcp-getgather/api-weather-mcp`
 
-When running the docker command be sure to include an `OPEN_WEATHER_API_KEY` as an environment variable argument, otherwise the service will fail. You can get a free API key [here](https://openweathermap.org/api).
+When running the docker command locally be sure to include an `OPEN_WEATHER_API_KEY` as an environment variable argument, otherwise the service will fail. You can get a free API key [here](https://openweathermap.org/api). The deployed instance on Fly already has an API key, which is why it works out of the box.
 
 Then add http://localhost:8000/mcp as a model endpoint in your MCP client. If using Claude Desktop, you can add the following to your `claude_desktop_config.json` (which is found from `Claude` -> `Settings` -> `Developer` -> `Edit Config`):
 
