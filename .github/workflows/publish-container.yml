@@ -20,7 +20,7 @@ jobs:
 
       - run: docker build -t ${{ env.IMAGE_NAME }} .
 
-      - run: docker run -p 8000:8000 --name api-weather-mcp -d -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} ${{ env.IMAGE_NAME }}
+      - run: docker run -p 8000:8000 --name mcp-openweathermap -d -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} ${{ env.IMAGE_NAME }}
         timeout-minutes: 3
 
       - name: Run the health check validation
@@ -28,7 +28,7 @@ jobs:
         timeout-minutes: 3
 
       - name: Get the container logs
-        run: docker logs --details api-weather-mcp
+        run: docker logs --details mcp-openweathermap
         if: always()
 
   build-and-publish:
@@ -80,12 +80,12 @@ jobs:
         run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Run the container
-        run: docker run -d --rm --name api-weather-mcp -p 8000:8000 -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        run: docker run -d --rm --name mcp-openweathermap -p 8000:8000 -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Run the health check validation
         run: while ! curl -s 'http://localhost:8000/health' | grep '"status":"ok"'; do sleep 1; done
         timeout-minutes: 3
 
       - name: Get the container logs
-        run: docker logs --details api-weather-mcp
+        run: docker logs --details mcp-openweathermap
         if: always()
