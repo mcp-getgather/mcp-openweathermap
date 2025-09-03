@@ -31,7 +31,7 @@ ENV PATH="/app/.venv/bin:${PATH}" \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1
 # Copy the rest of the application code
-COPY weather.py ./
+COPY weather.py sentry_config.py ./
 
 # Expose the port the MCP server will run on
 EXPOSE 8000
