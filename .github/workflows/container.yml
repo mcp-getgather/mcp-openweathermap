@@ -17,7 +17,7 @@ jobs:
 
       - run: docker build -t mcp-openweathermap .
 
-      - run: docker run -p 8000:8000 --name api-weather-mcp -d -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} mcp-openweathermap
+      - run: docker run -p 8000:8000 --name mcp-openweathermap -d -e OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }} mcp-openweathermap
         timeout-minutes: 3
 
       - name: Run the health check validation
