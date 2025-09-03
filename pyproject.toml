@@ -8,5 +8,6 @@ dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.13.1",
     "ruff>=0.12.11",
+    "sentry-sdk>=2.35.2",
     "ty>=0.0.1a19",
 ]
