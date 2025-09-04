@@ -7,8 +7,15 @@ from sentry_sdk.integrations.logging import LoggingIntegration
 
 def init_sentry():
     """Initialize Sentry SDK with proper configuration."""
+    sentry_dsn = os.getenv("SENTRY_DSN")
+    if not sentry_dsn:
+        logging.warning(
+            "SENTRY_DSN environment variable not set. Skipping Sentry initialization."
+        )
+        return
+
     sentry_sdk.init(
-        dsn="https://5f012080e6c7495038a9ba8a1e7ea2ff@o4504294971801600.ingest.us.sentry.io/4509957539758081",
+        dsn=sentry_dsn,
         integrations=[
             HttpxIntegration(),  # Capture HTTP requests
             LoggingIntegration(
