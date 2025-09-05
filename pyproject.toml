@@ -10,4 +10,9 @@ dependencies = [
     "ruff>=0.12.11",
     "sentry-sdk>=2.35.2",
     "ty>=0.0.1a19",
+    "fastmcp",
 ]
+
+[tool.uv.sources]
+fastmcp = { git = "https://github.com/jlowin/fastmcp.git", rev = "210e9cc5ca4003a0bcfac73399051a780b67a43a" }
+

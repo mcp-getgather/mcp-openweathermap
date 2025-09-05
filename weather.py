@@ -1,7 +1,8 @@
 from typing import Any
 import httpx
 import logging
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
+from fastmcp.server.auth.providers.github import GitHubProvider
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, RedirectResponse
 from dotenv import load_dotenv
@@ -11,6 +12,12 @@ from sentry_config import init_sentry
 load_dotenv()
 init_sentry()
 
+auth_provider = GitHubProvider(
+    client_id=os.getenv("FASTMCP_CLIENT_ID"),
+    client_secret=os.getenv("FASTMCP_CLIENT_SECRET"),
+    base_url="http://localhost:8000",
+)
+
 open_weather_api_key = os.getenv("OPEN_WEATHER_API_KEY")
 assert open_weather_api_key, "OPEN_WEATHER_API_KEY is not set"
 
@@ -18,7 +25,13 @@ assert open_weather_api_key, "OPEN_WEATHER_API_KEY is not set"
 logger = logging.getLogger(__name__)
 
 # Initialize FastMCP server
-mcp = FastMCP("weather", host="0.0.0.0", port=8000, streamable_http_path="/mcp")
+mcp = FastMCP(
+    "weather",
+    host="0.0.0.0",
+    port=8000,
+    streamable_http_path="/mcp",
+    auth=auth_provider,
+)
 
 # Constants
 OPEN_WEATHER_API_BASE = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={open_weather_api_key}&units=imperial"
@@ -38,6 +51,7 @@ async def make_nws_request(url: str) -> list[dict[str, Any]] | dict[str, Any] | 
         try:
             response = await client.get(url, headers=headers, timeout=30.0)
             response.raise_for_status()
+            logger.info(f"Response: {response.json()}")
             return response.json()
         except Exception as e:
             logger.error(f"Weather API request failed: {str(e)}")
