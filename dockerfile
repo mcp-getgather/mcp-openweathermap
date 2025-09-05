@@ -5,6 +5,7 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:0.8.4 /uv /uvx /bin/
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/root/.local/bin:$PATH"

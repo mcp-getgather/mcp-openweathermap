@@ -15,7 +15,8 @@ init_sentry()
 auth_provider = GitHubProvider(
     client_id=os.getenv("FASTMCP_CLIENT_ID"),
     client_secret=os.getenv("FASTMCP_CLIENT_SECRET"),
-    base_url="http://localhost:8000",
+    base_url=os.getenv("FASTMCP_BASE_URL"),
+    redirect_path=os.getenv("FASTMCP_REDIRECT_PATH"),
 )
 
 open_weather_api_key = os.getenv("OPEN_WEATHER_API_KEY")
