@@ -1,7 +1,8 @@
 from typing import Any
 import httpx
 import logging
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
+from fastmcp.server.auth.providers.github import GitHubProvider
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, RedirectResponse
 from dotenv import load_dotenv
@@ -11,14 +12,45 @@ from sentry_config import init_sentry
 load_dotenv()
 init_sentry()
 
-open_weather_api_key = os.getenv("OPEN_WEATHER_API_KEY")
-assert open_weather_api_key, "OPEN_WEATHER_API_KEY is not set"
-
 # Set up logger
 logger = logging.getLogger(__name__)
 
+# Check for FastMCP auth environment variables
+fastmcp_client_id = os.getenv("FASTMCP_CLIENT_ID")
+fastmcp_client_secret = os.getenv("FASTMCP_CLIENT_SECRET")
+fastmcp_base_url = os.getenv("FASTMCP_BASE_URL")
+fastmcp_redirect_path = os.getenv("FASTMCP_REDIRECT_PATH")
+open_weather_api_key = os.getenv("OPEN_WEATHER_API_KEY")
+assert open_weather_api_key, "OPEN_WEATHER_API_KEY is not set"
+
+# Only create auth provider if all required variables are present
+auth_provider = None
+if all(
+    [fastmcp_client_id, fastmcp_client_secret, fastmcp_base_url, fastmcp_redirect_path]
+):
+    auth_provider = GitHubProvider(
+        client_id=fastmcp_client_id,
+        client_secret=fastmcp_client_secret,
+        base_url=fastmcp_base_url,
+        redirect_path=fastmcp_redirect_path,
+    )
+
 # Initialize FastMCP server
-mcp = FastMCP("weather", host="0.0.0.0", port=8000, streamable_http_path="/mcp")
+if auth_provider:
+    mcp = FastMCP(
+        "weather",
+        host="0.0.0.0",
+        port=8000,
+        streamable_http_path="/mcp",
+        auth=auth_provider,
+    )
+else:
+    mcp = FastMCP(
+        "weather",
+        host="0.0.0.0",
+        port=8000,
+        streamable_http_path="/mcp",
+    )
 
 # Constants
 OPEN_WEATHER_API_BASE = "https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={open_weather_api_key}&units=imperial"
@@ -38,6 +70,7 @@ async def make_nws_request(url: str) -> list[dict[str, Any]] | dict[str, Any] | 
         try:
             response = await client.get(url, headers=headers, timeout=30.0)
             response.raise_for_status()
+            logger.info(f"Response: {response.json()}")
             return response.json()
         except Exception as e:
             logger.error(f"Weather API request failed: {str(e)}")
